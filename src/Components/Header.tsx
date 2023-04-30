@@ -1,8 +1,14 @@
 import { Link, useMatch } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
-import { motion } from "framer-motion";
-const Nav = styled.nav`
+import {
+  motion,
+  useAnimation,
+  useScroll,
+  useMotionValueEvent,
+} from "framer-motion";
+
+const Nav = styled(motion.nav)`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -85,17 +91,49 @@ const logoVariants = {
 const Input = styled(motion.input)`
   transform-origin: right center;
   position: absolute;
-  left: -150px;
+  right: 0px;
+  padding: 5px 10px;
+  padding-left: 40px;
+  z-index: -1;
+  color: white;
+  font-size: 16px;
+  background-color: transparent;
+  border: 1px solid ${(props) => props.theme.white.lighter};
 `;
-
+const navVariants = {
+  top: {
+    backgroundColor: "rgba(0, 0, 0, 0)",
+  },
+  scroll: {
+    backgroundColor: "rgba(0, 0, 0, 1)",
+  },
+};
 function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const homeMatch = useMatch("/");
   const tvMatch = useMatch("/tv");
-  const toggleSearch = () => setSearchOpen((prev) => !prev);
+  const inputAnimation = useAnimation();
+  const navAnimation = useAnimation();
+  const { scrollYProgress } = useScroll();
+  const toggleSearch = () => {
+    if (searchOpen) {
+      // 닫았을때, 애니메이션
+      inputAnimation.start({
+        scaleX: 0,
+      });
+    } else {
+      // 열었을때 애니메이션
+      inputAnimation.start({ scaleX: 1 });
+    }
+    setSearchOpen((prev) => !prev);
+  };
+  useMotionValueEvent(scrollYProgress, "change", (y) => {
+    if (y < 0.1) navAnimation.start("top");
+    else navAnimation.start("scroll");
+  });
 
   return (
-    <Nav>
+    <Nav variants={navVariants} animate={navAnimation} initial={"top"}>
       <Col>
         <Logo
           variants={logoVariants}
@@ -136,8 +174,8 @@ function Header() {
             ></path>
           </motion.svg>
           <Input
+            animate={inputAnimation}
             transition={{ type: "linear" }}
-            animate={{ scaleX: searchOpen ? 1 : 0 }}
             placeholder="Search for movie or tv show..."
           />
         </Search>
