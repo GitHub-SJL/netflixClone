@@ -17,6 +17,10 @@ function App() {
           element: <Home />,
         },
         {
+          path: "movies/:id",
+          element: <Home />,
+        },
+        {
           path: "tv",
           element: <Tv />,
         },
