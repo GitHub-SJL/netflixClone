@@ -1,4 +1,4 @@
 function Search() {
-    return null;
-  }
-  export default Search;
+  return <h1>Search</h1>;
+}
+export default Search;

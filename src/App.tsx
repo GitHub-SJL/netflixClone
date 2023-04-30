@@ -16,6 +16,14 @@ function App() {
           path: "",
           element: <Home />,
         },
+        {
+          path: "tv",
+          element: <Tv />,
+        },
+        {
+          path: "search",
+          element: <Search />,
+        },
       ],
     },
   ]);
